@@ -107,7 +107,7 @@ classdef jl
             while true
                 expr = input(prompt, 's');
                 if doneq(expr), break, end
-                if endsWith(expr,';');
+                if endsWith(expr,';')
                     jl.eval(expr);
                 else
                     jl.eval(expr)
@@ -133,17 +133,17 @@ classdef jl
                     error('It appears the mexjulia MEX function is missing. Consider building "Mex.jl".\n');
                 end
 
+                % basic runtime initialization
+                jldict = load('jldict', 'julia_home', 'sys_image', 'lib_path');
+
                 % tweak path to find shared libs
                 if ispc
                     % This is a hack for windows which lets the mex function
                     % find the julia dlls during initialization without requiring that
                     % julia be on the path.
                     old_dir = pwd;
-                    cd(jl.julia_home);
+                    cd(jldict.julia_home);
                 end
-
-                % basic runtime initialization
-                jldict = load('jldict', 'julia_home', 'sys_image', 'lib_path');
 
                 mexjulia('', jldict.julia_home, jldict.sys_image, jldict.lib_path);
 
@@ -151,7 +151,7 @@ classdef jl
                 setenv('MATLAB_HOME', jl.matlab_dir);
 
                 % load Mex.jl and MATLAB.jl
-                mexjulia(0, ['Base.load_julia_startup(); using Mex; using MATLAB;']);
+                mexjulia(0, 'Base.load_julia_startup(); using Mex; using MATLAB;');
 
                 % restore the path
                 if ispc

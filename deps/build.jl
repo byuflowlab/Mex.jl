@@ -62,7 +62,7 @@ function ldlibs()
     if Sys.isunix()
         return "-l$libname -ldl"
     else
-        return joinpath(libDir(), "lib$libname.dll.a")
+        return realpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a"))
     end
 end
 
