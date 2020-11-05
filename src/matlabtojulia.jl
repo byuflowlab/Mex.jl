@@ -21,20 +21,20 @@ function jl_mex_inner(plhs::Vector{Ptr{Cvoid}}, prhs::Vector{Ptr{Cvoid}})
     try
 
         # extract function and arguments (function in first slot, arguments in remaining slots)
-        fun = Core.eval(Main, Meta.parse(MATLAB.jvalue(MATLAB.MxArray(prhs[1], false))))
+        fun = Core.eval(Main, Meta.parse(MATLAB.jstring(MATLAB.MxArray(prhs[1], false))))
         args = MATLAB.MxArray.(prhs[2:end], false)
 
         # call Julia function
-        vals = fun(args)
+        out = fun(args)
 
-        # convert outputs to MxArray type
-        for i = 1:length(vals)
+        out = (out isa Tuple ? out : (out,))::Tuple # wrap in tuple to simplify logic below
+
+        # convert output(s) to MxArray type
+        for i = 1:length(out)
             # stop early if max number of outputs is reached
-            if i > nlhs-1
-                break
-            end
+            i > nlhs-1 && break
             # create MATLAB array for output
-            mx = MATLAB.mxarray(vals[i])
+            mx = MATLAB.mxarray(out[i])
             # transfer ownership to MATLAB
             mx.own = false
             # give pointer to MATLAB
@@ -74,45 +74,35 @@ jl_eval(exprs::Vector{MATLAB.MxArray}) = [Core.eval(Main, Meta.parse(MATLAB.jval
 # If npos < 0, all arguments are assumed positional.
 function jl_call_kw(args::Vector{MATLAB.MxArray})
 
-    # convert arguments to Julia objects
-    vals = MATLAB.jvalue.(args)
-    nvals = length(args)
+    # process arguments
+    nargs = length(args)
 
     # first argument is the function
-    func = Symbol(vals[1])
+    func = Meta.parse(MATLAB.jstring(args[1]))
 
     # second argument is the number of positional arguments
-    npos = vals[2]
+    npos = Int(MATLAB.jscalar(args[2]))::Int
 
-    # if npos is negative, all arguments are positional
-    if npos < 0
-        npos = nvals - 2
-    end
-
-    # get number of keyword arguments
-    nkw = div(nvals - 2 - npos, 2)
-
-    # initialize arguments to julia expression
-    expr_args = Array{Any, 1}(undef, npos+nkw)
+    # construct the call expression
+    expr = Expr(:call, func)
 
     # add positional arguments
+    npos = npos < 0 ? nargs - 2 : npos # if npos is negative, all arguments are positional
     for i = 1:npos
-        expr_args[i] = vals[2+i]
+        push!(expr.args, MATLAB.jvalue(args[2+i]))
     end
 
     # add keyword arguments
+    nkw = div(nargs - 2 - npos, 2)
     for i = 1:nkw
         # assemble the key-value pair
-        kw = Symbol(vals[2+npos+(2*i-1)])
-        val = vals[2+npos+(2*i)]
-        expr_args[npos+i] = Expr(:kw, kw, val)
+        kw = Symbol(MATLAB.jstring(args[2+npos+(2*i-1)]))
+        val = MATLAB.jvalue(args[2+npos+(2*i)])
+        push!(expr.args, Expr(:kw, kw, val))
     end
 
-    # construct the expression
-    expr = Expr(:call, func, expr_args...)
-
     # return the evaluated expression
-    return [Core.eval(Main, expr)]
+    return Core.eval(Main, expr)
 end
 
 # used for mimicing a basic Julia repl from the MATLAB console
