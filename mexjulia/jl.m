@@ -2,9 +2,8 @@ classdef jl
     %JL static class encapsulating MATLAB-side functionality for mexjulia
     % Call julia methods with jl.call and jl.call_kw, or call specially-designed
     % 'MEX-like' Julia methods with jl.mex.
-    % For performance, use jl.mex, which has less overhead.
-    % For maximum performance, make you own MATLAB function wrapper that
-    % calls mexjulia('jl_mex',fn,...) directly (see 'performance' example)
+    % For maximum performance, make you own function wrapper that
+    % calls mexjulia directly (see 'performance' example)
     
     methods (Static)
         % Call a MEX-like Julia function. Note that for this call to work,
