@@ -59,7 +59,7 @@ end
 # --- Functions Used by MATLAB when calling embedded Julia --- #
 
 # evaluates a Julia expressions
-jl_eval(exprs::Vector{MATLAB.MxArray}) = [Core.eval(Main, Meta.parse(MATLAB.jvalue(e))) for e in exprs]
+jl_eval(exprs::Vector{MATLAB.MxArray}) = ntuple(i -> Core.eval(Main, Meta.parse(MATLAB.jstring(exprs[i]))), length(exprs))
 
 # Call a julia function, possibly with keyword arguments.
 #

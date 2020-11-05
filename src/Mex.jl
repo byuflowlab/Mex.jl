@@ -26,4 +26,13 @@ include("exceptions.jl")
 include("juliatomatlab.jl")
 include("matlabtojulia.jl")
 
+# Patch MATLAB.jl's handling of tuples
+function MATLAB.mxarray(t::Tuple)
+    pm = mxcellarray(length(t))
+    for i = 1:length(t)
+        set_cell(pm, i, mxarray(t[i]))
+    end
+    return pm
+end
+
 end # module
