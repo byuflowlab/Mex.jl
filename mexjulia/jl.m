@@ -1,43 +1,37 @@
 classdef jl
-    %JL static class encapsulating matlab-side functionality for mexjulia
-
+    %JL static class encapsulating MATLAB-side functionality for mexjulia
+    % Call julia methods with jl.call and jl.call_kw, or call specially-designed
+    % 'MEX-like' Julia methods with jl.mex.
+    % For performance, use jl.mex, which has less overhead.
+    % For maximum performance, make you own MATLAB function wrapper that
+    % calls mexjulia('jl_mex',fn,...) directly (see 'performance' example)
+    
     methods (Static)
-        % Call a MEX-like Julia function.
+        % Call a MEX-like Julia function. Note that for this call to work,
+        % Julia must have already been initialized, either with jl.call(), or
+        % manually with jl.init()
         %
-        % nout - the number of expected return values
         % fn - the name of the function to call
         %
         % A MEX-like function is one that can be invoked with a value of type
         % `Vector{MxArray}` and returns a collection of values for which a
         % conversion to `MxArray` exists.
-        function varargout = mexn(nout, fn, varargin)
-            % check if julia is initialized
-            jl.check_initialized;
-
+        function varargout = mex(fn, varargin)
+            if nargout == 0; nout = 1; else; nout = nargout; end
             % call julia function
-            outputs = cell(nout+1, 1);
-            [outputs{:}] = mexjulia('jl_mex', fn, varargin{:});
-
-            % throw error if error occured
-            if ~islogical(outputs{1})
-                throw(outputs{1});
-            end
-
-            % assign outputs
-            varargout = outputs(2:end);
+            [rv, varargout{1:nout}] = mexjulia('jl_mex', fn, varargin{:});
+            % throw if error occured
+            if ~islogical(rv); throw(rv); end
         end
-
-        % Like mexn but assumes exactly one output
-        function val = mex(fn, varargin)
-            val = jl.mexn(1, fn, varargin{:});
-        end
-
+        
         % Interpret string(s) as Julia expression(s), returning value(s).
         function varargout = eval(varargin)
+            % check if julia is initialized
+            jl.check_init();
             varargout = cell(nargin, 1);
-            [varargout{:}] = jl.mexn(nargin, 'Mex.jl_eval', varargin{:});
+            [varargout{:}] = jl.mex('Mex.jl_eval', varargin{:});
         end
-
+        
         % Call a Julia function, possibly with keyword arguments, returning its
         % value.
         %
@@ -48,7 +42,9 @@ classdef jl
         % pairs.
         %
         % If npos < 0 all arguments are assumed to be positional.
-        function v = callkw(fn, npos, varargin)
+        function varargout = callkw(fn, npos, varargin)
+            % check if julia is initialized
+            jl.check_init();
             if npos >= 0
                 nkw = length(varargin) - npos;
                 if nkw < 0
@@ -57,53 +53,46 @@ classdef jl
                     error('The number of keyword arguments is %u, but must be even.', nkw);
                 end
             end
-            v = jl.mex('Mex.jl_call_kw', fn, int32(npos), varargin{:});
+            [varargout{1:nargout}] = jl.mex('Mex.jl_call_kw', fn, int32(npos), varargin{:});
         end
-
+        
         % Call a Julia function with the given (positional) arguments, returning its value.
         %
         % fn - the name of the function to call
-        function v = call(fn, varargin)
-            v = jl.callkw(fn, -1, varargin{:});
+        function varargout = call(fn, varargin)
+            [varargout{1:nargout}] = jl.callkw(fn, -1, varargin{:});
         end
-
-        % Wrap a Julia function in a matlab function handle.
+        
+        % Wrap a Julia function in a MATLAB function handle.
         %
         % fn - the name of the function to wrap
         % npos - if provided, the number of arguments to be treated as
         % positional
         function hdl = wrap(fn, npos)
-            if nargin < 2
-                npos = -1;
-            end
+            if nargin < 2; npos = -1; end
             hdl = @(varargin) jl.callkw(fn, npos, varargin{:});
         end
-
-        % Wrap a MEX-like Julia function in a matlab function handle.
+        
+        % Wrap a MEX-like Julia function in a MATLAB function handle.
         %
         % fn - the name of the function to wrap
-        % nout - if provided, the number of output values to expect (default=1)
-        function hdl = wrapmex(fn, nout)
-            if nargin < 2
-                nout = 1;
-            end
-            hdl = @(varargin) jl.mexn(nout, fn, varargin{:});
+        function hdl = wrapmex(fn)
+            hdl = @(varargin) jl.mex(fn, varargin{:});
         end
-
+        
         % Include a file in the Julia runtime
         function include(fn)
             jl.eval(sprintf('Base.include(Main, "%s"); nothing', jl.forward_slashify(fn)));
         end
-
+        
         function repl(prompt, doneq)
-
             if nargin < 2
                 doneq = @(expr)startsWith(expr,';');
                 if nargin < 1
                     prompt = 'julia> ';
                 end
             end
-
+            
             while true
                 expr = input(prompt, 's');
                 if doneq(expr), break, end
