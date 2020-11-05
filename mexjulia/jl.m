@@ -84,6 +84,7 @@ classdef jl
             jl.eval(sprintf('Base.include(Main, "%s"); nothing', jl.forward_slashify(fn)));
         end
         
+        % Simple Julia REPL mode
         function repl(prompt, doneq)
             if nargin < 2
                 doneq = @(expr)startsWith(expr,';');
@@ -115,23 +116,19 @@ classdef jl
         
         function init()
             % check that the mexfunction exists
-            if isempty(which('mexjulia'))
-                error('It appears the mexjulia MEX function is missing. Consider building "Mex.jl".\n');
+            if exist('mexjulia','file') ~= 3
+                error('It appears the mexjulia MEX function is missing. Try re-building "Mex.jl"');
             end
             
-            % basic runtime initialization
+            % load runtime settings from matfile
             jldict = load('jldict', 'julia_home', 'sys_image', 'lib_path');
             
-            % tweak path to find shared libs
-            if ispc
-                % This is a hack for windows which lets the mex function
-                % find the julia dlls during initialization without
-                % requiring that julia be on the path.
+            if ispc % cd to Julia dir so that the mexfunction can find DLLs
                 old_dir = pwd;
                 cd(jldict.julia_home);
             end
             
-            % init
+            % basic runtime initialization
             mexjulia(int32(0), '', jldict.julia_home, jldict.sys_image, jldict.lib_path);
             
             % make sure MATLAB_HOME points to _this_ version of MATLAB.
