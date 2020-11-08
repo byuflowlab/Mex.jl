@@ -35,4 +35,11 @@ function MATLAB.mxarray(t::Tuple)
     return pm
 end
 
+# Patch MATLAB.jl's handling of reinterpreted arrays
+function MATLAB.mxarray(a::Base.ReinterpretArray{T}) where T<:MATLAB.MxRealNum
+    mx = mxarray(T, size(a))
+    ccall(:memcpy, Ptr{Cvoid}, (Ptr{Cvoid}, Ptr{Cvoid}, UInt), data_ptr(mx), parent(a), length(a)*sizeof(T))
+    return mx
+end
+
 end # module

@@ -81,7 +81,7 @@ classdef jl
         
         % Include a file in the Julia runtime
         function include(fn)
-            jl.eval(sprintf('Base.include(Main, "%s"); nothing', jl.forward_slashify(fn)));
+            mexjulia(int32(0),sprintf('Base.include(Main, "%s");', jl.forward_slashify(fn)));
         end
         
         % Simple Julia REPL mode
@@ -135,7 +135,7 @@ classdef jl
             setenv('MATLAB_HOME', jl.matlab_dir);
             
             % load Mex.jl and MATLAB.jl
-            mexjulia(int32(0), 'Base.load_julia_startup(); using Mex; using MATLAB;');
+            mexjulia(int32(0), 'Base.load_julia_startup(); using MATLAB, Mex;');
             
             % restore the path
             if ispc
