@@ -42,4 +42,16 @@ function MATLAB.mxarray(a::Base.ReinterpretArray{T}) where T<:MATLAB.MxRealNum
     return mx
 end
 
+function MATLAB.mxarray(a::Base.ReinterpretArray{T}) where T<:MATLAB.MxComplexNum
+    mx = mxarray(T, size(a))
+    na = length(a)
+    rdat = unsafe_wrap(Array, MATLAB.real_ptr(mx), na)
+    idat = unsafe_wrap(Array, MATLAB.imag_ptr(mx), na)
+    @inbounds for i = 1:na
+        rdat[i] = real(a[i])
+        idat[i] = imag(a[i])
+    end
+    return mx
+end
+
 end # module
