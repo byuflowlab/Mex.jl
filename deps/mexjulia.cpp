@@ -26,6 +26,7 @@ void mexFunction(int nl, mxArray* pl[], int nr, const mxArray* pr[])
     char *fnName = mxArrayToString(pr[0]);
     jl_function_t *fn = jl_get_function(jl_main_module, fnName);
     mxFree(fnName);
+    
     if(!fn)
     {
       mexErrMsgTxt("Function not found.");
@@ -48,6 +49,7 @@ void mexFunction(int nl, mxArray* pl[], int nr, const mxArray* pr[])
         char *home =  nr > 2 && mxIsChar(pr[2]) ? mxArrayToString(pr[2]) : NULL;
         char *image = nr > 3 && mxIsChar(pr[3]) ? mxArrayToString(pr[3]) : NULL;
         char *lib =   nr > 4 && mxIsChar(pr[4]) ? mxArrayToString(pr[4]) : NULL;
+        jl_options.handle_signals = JL_OPTIONS_HANDLE_SIGNALS_OFF;
 #ifdef _OS_LINUX_
         if (!dlopen(lib, RTLD_LAZY | RTLD_GLOBAL))
         {
