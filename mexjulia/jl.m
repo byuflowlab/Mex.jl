@@ -76,12 +76,16 @@ classdef jl
         %
         % fn - the name of the function to wrap
         function hdl = wrapmex(fn)
+            % check if julia is initialized
+            jl.check_init();
             hdl = @(varargin) jl.mex(fn, varargin{:});
         end
         
         % Include a file in the Julia runtime
-        function include(fn)
-            mexjulia(int32(0),sprintf('Base.include(Main, "%s");', jl.forward_slashify(fn)));
+        function include(fl)
+            % check if julia is initialized
+            jl.check_init();
+            mexjulia(int32(0), sprintf('Base.include(Main,"%s");',jl.forward_slashify(fl)));
         end
         
         % Simple Julia REPL mode
