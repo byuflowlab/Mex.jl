@@ -22,5 +22,10 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
-      - name: Run tests
+      - name: Run Julia tests
         uses: julia-actions/julia-runtest@master
+      - name: Run MATLAB tests
+        uses: matlab-actions/run-tests@v1
+        with:
+          source-folder: mexjulia
+          select-by-folder: test
