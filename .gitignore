@@ -10,3 +10,4 @@ pathdef.m
 *DS_Store
 Manifest.toml
 deps/build.log
+deps/build.m
