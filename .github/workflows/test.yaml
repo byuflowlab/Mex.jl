@@ -13,7 +13,7 @@ jobs:
         
     steps:
       - name: Install csh
-        run: sudo apt-get install -y csh
+        run: sudo apt-get install -y csh glibc
       - name: Check out repository
         uses: actions/checkout@v2
       - name: Set up MATLAB
