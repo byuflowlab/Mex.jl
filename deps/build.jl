@@ -175,23 +175,30 @@ if !isnothing(matlab_root)
             
             % Run Mex Command
             $mex_cmd;
-
-            % Check if the `mexjulia` directory is already on the path
-            path_dirs = regexp(path, pathsep, 'split');
-            if ispc
-                on_path = any(strcmpi($(matlab_escape(outdir)), path_dirs));
-            else
-                on_path = any(strcmp($(matlab_escape(outdir)), path_dirs));
-            end
-        
-            % Add the `mexjulia` directory to the path and save the path (if necessary)
-            if ~on_path
-                fprintf('%s is not on the MATLAB path. Adding it and saving...\\n\', $(matlab_escape(outdir)));
-                path($(matlab_escape(outdir)), path);
-                savepath;
-            end
+            
             """
         )
+        
+        if !is_ci()
+            println(io,
+                """
+                % Check if the `mexjulia` directory is already on the path
+                path_dirs = regexp(path, pathsep, 'split');
+                if ispc
+                    on_path = any(strcmpi($(matlab_escape(outdir)), path_dirs));
+                else
+                    on_path = any(strcmp($(matlab_escape(outdir)), path_dirs));
+                end
+            
+                % Add the `mexjulia` directory to the path and save the path (if necessary)
+                if ~on_path
+                    fprintf('%s is not on the MATLAB path. Adding it and saving...\\n\', $(matlab_escape(outdir)));
+                    path($(matlab_escape(outdir)), path);
+                    savepath;
+                end
+                """
+            )
+        end
     end
 
     # We have to run the build script separately for CI due to licensing issues
