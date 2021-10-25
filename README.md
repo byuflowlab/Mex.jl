@@ -1,5 +1,7 @@
 # Mex.jl
 
+![](https://github.com/byuflowlab/GXBeam.jl/workflows/Run%20tests/badge.svg)
+
 *Embedding [Julia](http://julialang.org/) in the [MATLAB](http://www.mathworks.com/products/matlab/) process*
 
 **Mex.jl** embeds Julia into the MATLAB process using MATLAB's [C++ Mex interface](https://www.mathworks.com/help/matlab/cpp-mex-file-applications.html).  This allows Julia functions to be called from MATLAB.  This also allows (embedded) Julia to call MATLAB functions.  
