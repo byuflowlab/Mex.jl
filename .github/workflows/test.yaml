@@ -16,26 +16,22 @@ jobs:
         run: sudo apt-get install -y csh
       - name: Check out repository
         uses: actions/checkout@v2
-      - name: Set up MATLAB
-        uses: matlab-actions/setup-matlab@v1
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
       - name: Generate Build Script
         uses: julia-actions/julia-buildpkg@master
       - name: Generate Mex File
         uses: matlab-actions/run-command@v1
         with:
           command: addpath('deps'), build
-      - name: Run Julia tests
-        uses: julia-actions/julia-runtest@master
-      - name: Run MATLAB test
-        uses: matlab-actions/run-command@v1
-        with:  
-          command: addpath('mexjulia'), addpath('test'), jlevalTest
-#       - name: Run MATLAB tests
-#         uses: matlab-actions/run-tests@v1
-#         with:
-#           source-folder: mexjulia
-#           select-by-folder: test
+      - name: Add Mex.jl package to the default Julia environment
+        run: julia -e 'using Pkg; Pkg.add(".");'
+      - name: Run MATLAB tests
+        uses: matlab-actions/run-tests@v1
+        with:
+          source-folder: mexjulia
+          select-by-folder: test
