@@ -147,6 +147,7 @@ if !isnothing(matlab_root)
     mex_cmd = "mex -v -largeArrayDims -outdir \"$outdir\" LDFLAGS=\'$(build_ldflags) \$LDFLAGS\' CFLAGS=\'$(build_cflags) \$CFLAGS\' \"$(build_src)\" $(build_ldlibs)"
 
     # create MATLAB build script
+    dict_file = joinpath(outdir, "jldict.mat")
     build_file = joinpath(pwd(), "build.m")
 
     open(build_file, "w") do io
@@ -168,7 +169,7 @@ if !isnothing(matlab_root)
             build_ldlibs = $(matlab_escape(build_ldlibs));
             build_src = $(matlab_escape(build_src));
             mex_cmd = $(matlab_escape(mex_cmd));
-            save("jldict.mat", "is_debug", "julia_bin", "julia_home",...
+            save($(matlab_escape(dict_file)), "is_debug", "julia_bin", "julia_home",...
                 "sys_image", "lib_base", "lib_path", "lib_dir", "inc_dir", "build_cflags",...
                 "build_ldflags", "build_ldlibs", "build_src", "mex_cmd");
             
