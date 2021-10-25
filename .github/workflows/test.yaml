@@ -22,7 +22,7 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
-      - name: Create Build Script
+      - name: Generate Build Script
         uses: julia-actions/julia-buildpkg@master
       - name: Run Build Script
         uses: matlab-actions/run-command@v1
