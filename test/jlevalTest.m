@@ -4,7 +4,11 @@
 assert(exist("mexjulia", "file") == 3)
 
 %% Test 1: Single Return Argument
-result = jl.eval('2+2');
+try
+    result = jl.eval('2+2');
+catch err
+    disp(getReport(err,'extended'));
+end
 assert(result == 4)
 
 %% Test 2: Multiple Return Arguments
