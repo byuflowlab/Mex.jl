@@ -1,9 +1,9 @@
-%% tests for jl.mex function
+% tests for jl.mex function
 
 % check that mexjulia mex file exists
 assert(exist("mexjulia", "file") == 3)
 
-% run test
+%% Test 1: jl.mex
 a = rand(5,5);
 jleval import MATLAB;
 jleval double_it(args::Vector{MATLAB.MxArray}) = [2*MATLAB.jvalue(arg) for arg in args];

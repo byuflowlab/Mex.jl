@@ -1,4 +1,4 @@
-%% tests for jl.eval function
+% tests for jl.eval function
 
 % check that mexjulia mex file exists
 assert(exist("mexjulia", "file") == 3)
