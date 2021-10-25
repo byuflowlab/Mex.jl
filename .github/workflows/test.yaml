@@ -27,5 +27,4 @@ jobs:
       - name: Run MATLAB tests
         uses: matlab-actions/run-tests@v1
         with:
-          source-folder: mexjulia
           select-by-folder: test
