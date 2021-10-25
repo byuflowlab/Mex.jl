@@ -118,6 +118,8 @@ function mex_extension()
     return ext
 end
 
+is_ci() = lowercase(get(ENV, "CI", "false")) == "true"
+
 # find matlab root
 matlab_root = find_matlab_root()
 
@@ -191,14 +193,19 @@ if !isnothing(matlab_root)
         )
     end
 
-    # run the MATLAB build script
-    run(`$matlab_cmd -nodisplay -nosplash -nodesktop -r "run('$build_file');exit"`)
+    # The MATLAB build script is run separately for CI
+    if !is_ci() 
 
-    # check that the build information has been saved in the mexjulia directory
-    @assert isfile(joinpath(outdir, "jldict.mat"))
+        # run the MATLAB build script
+        run(`$matlab_cmd -nodisplay -nosplash -nodesktop -r "run('$build_file');exit"`)
 
-    # check that the compiled mexjulia file has been saved in the mexjulia directory
-    @assert isfile(joinpath(outdir, "mexjulia" * mex_extension()))
+        # check that the build information has been saved in the mexjulia directory
+        @assert isfile(joinpath(outdir, "jldict.mat"))
+
+        # check that the compiled mexjulia file has been saved in the mexjulia directory
+        @assert isfile(joinpath(outdir, "mexjulia" * mex_extension()))
+    
+    end
 
 elseif get(ENV, "JULIA_REGISTRYCI_AUTOMERGE", nothing) == "true"
     # We need to be able to install and load this package without error for
