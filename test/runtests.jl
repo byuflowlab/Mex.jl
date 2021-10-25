@@ -42,11 +42,5 @@ if !is_ci() # only test if not CI
         """
         @test result ≈ expected_result
     end
-
-else
-
-    println(pwd())
-    s = read("../deps/build.log", String)
-    print(s)
-
+    
 end
