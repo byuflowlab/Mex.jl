@@ -22,8 +22,12 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
-      - name: Run Build Step
+      - name: Create Build Script
         uses: julia-actions/julia-buildpkg@master
+      - name: Run Build Script
+        uses: matlab-actions/run-command@v1
+        with:
+          command: addpath('deps'), build
       - name: Run Julia tests
         uses: julia-actions/julia-runtest@master
       - name: Run MATLAB tests
