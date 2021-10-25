@@ -2,7 +2,7 @@ using MATLAB, Test
 
 is_ci() = lowercase(get(ENV, "CI", "false")) == "true"
 
-Pkg.Registry.status()
+using Pkg; Pkg.Registry.status()
 
 if !is_ci() # only test if not CI
 
