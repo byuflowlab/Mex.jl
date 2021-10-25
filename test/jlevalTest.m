@@ -1,5 +1,8 @@
 %% tests for jl.eval function
 
+% check that mexjulia mex file exists
+assert(exist("mexjulia", "file") == 3)
+
 %% Test 1: Single Return Argument
 result = jl.eval('2+2');
 assert(result == 4)
