@@ -58,7 +58,7 @@ function ldlibs()
     end
 end
 
-# the following functions are taken from the MATLAB.jl build script and are used to 
+# the following two functions are taken from the MATLAB.jl build script and are used to 
 # locate MATLAB and its relevant libraries and commands
 
 function find_matlab_root()
@@ -105,6 +105,17 @@ function find_matlab_cmd(matlab_root)
         matlab_cmd = "$(Base.shell_escape(matlab_exe))"
     end
     return matlab_cmd
+end
+
+function mex_extension()
+    if Sys.islinux()
+        ext = ".mexa64"
+    elseif Sys.isapple()
+        ext = ".mexmaci64"
+    elseif Sys.iswindows()
+        ext = ".mexw"*string(Sys.WORD_SIZE)
+    end
+    return ext
 end
 
 # find matlab root
@@ -180,8 +191,14 @@ if !isnothing(matlab_root)
         )
     end
 
-    # run the build script
+    # run the MATLAB build script
     run(`$matlab_cmd -nodisplay -nosplash -nodesktop -r "run('$build_file');exit"`)
+
+    # check that the build information has been saved in the mexjulia directory
+    @assert isfile(joinpath(outdir, "jldict.mat"))
+
+    # check that the compiled mexjulia file has been saved in the mexjulia directory
+    @assert isfile(joinpath(outdir, "mexjulia" * mex_extension()))
 
 elseif get(ENV, "JULIA_REGISTRYCI_AUTOMERGE", nothing) == "true"
     # We need to be able to install and load this package without error for
