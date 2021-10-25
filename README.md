@@ -1,6 +1,6 @@
 # Mex.jl
 
-![](https://github.com/byuflowlab/GXBeam.jl/workflows/Run%20tests/badge.svg)
+![](https://github.com/byuflowlab/Mex.jl/workflows/Run%20tests/badge.svg)
 
 *Embedding [Julia](http://julialang.org/) in the [MATLAB](http://www.mathworks.com/products/matlab/) process*
 
