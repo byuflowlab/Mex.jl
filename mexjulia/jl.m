@@ -141,9 +141,9 @@ classdef jl
             '    isfile(startupfile) && Base.JLOptions().startupfile != 2 && Base.include(Main, startupfile) ',...
             'end '));
 
-            % rebuild MATLAB.jl
+            % add MATLAB.jl
             if getenv('CI')
-                mexjulia(true, 'using Pkg; Pkg.build("MATLAB")')
+                mexjulia(true, 'using Pkg; Pkg.add("MATLAB");')
             end
 
             % load required packages
