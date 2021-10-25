@@ -1,6 +1,9 @@
 module Mex
 
-using MATLAB, Libdl
+using Libdl, Reexport
+
+using Reexport
+@reexport using MATLAB
 
 export jl_mex, input, call_matlab, is_interrupt_pending, check_for_interrupt
 

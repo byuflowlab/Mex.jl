@@ -124,13 +124,13 @@ classdef jl
             % load runtime settings from matfile
             jldict = load('jldict', 'julia_home', 'sys_image', 'lib_path');
             
+            % make sure MATLAB_HOME points to _this_ version of MATLAB.
+            setenv('MATLAB_HOME', jl.matlab_dir);
+
             if ispc % cd to Julia dir so that the mexfunction can find DLLs
                 old_dir = pwd;
                 cd(jldict.julia_home);
             end
-            
-            % make sure MATLAB_HOME points to _this_ version of MATLAB.
-            setenv('MATLAB_HOME', jl.matlab_dir);
 
             % basic runtime initialization
             mexjulia(false, jldict.julia_home, jldict.sys_image, jldict.lib_path);
@@ -141,13 +141,8 @@ classdef jl
             '    isfile(startupfile) && Base.JLOptions().startupfile != 2 && Base.include(Main, startupfile) ',...
             'end '));
 
-            mexjulia(true, 'using Pkg')
-
+            % load Mex.jl
             mexjulia(true, 'using Mex')
-
-            mexjulia(true, 'Pkg.add("MATLAB")');
-
-            mexjulia(true, 'using MATLAB')
 
             % restore the path
             if ispc
