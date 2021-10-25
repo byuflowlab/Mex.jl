@@ -146,7 +146,7 @@ if !isnothing(matlab_root)
     outdir = normpath(joinpath(pwd(),"..","mexjulia"))
     mex_cmd = "mex -v -largeArrayDims -outdir \"$outdir\" LDFLAGS=\'$(build_ldflags) \$LDFLAGS\' CFLAGS=\'$(build_cflags) \$CFLAGS\' \"$(build_src)\" $(build_ldlibs)"
 
-    # create MATLAB build script
+    # generate Mex-file build script
     dict_file = joinpath(outdir, "jldict.mat")
     build_file = joinpath(pwd(), "build.m")
 
@@ -194,10 +194,10 @@ if !isnothing(matlab_root)
         )
     end
 
-    # The MATLAB build script is run separately for CI
+    # We have to run the build script separately for CI due to licensing issues
     if !is_ci() 
 
-        # run the MATLAB build script
+        # run the Mex-file build script
         run(`$matlab_cmd -nodisplay -nosplash -nodesktop -r "run('$build_file');exit"`)
 
         # check that the build information has been saved in the mexjulia directory
