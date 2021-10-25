@@ -43,4 +43,9 @@ if !is_ci() # only test if not CI
         @test result ≈ expected_result
     end
 
+else
+
+    s = read("../deps/build.log", String)
+    print(s)
+
 end
