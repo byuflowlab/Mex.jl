@@ -141,9 +141,14 @@ classdef jl
             '    isfile(startupfile) && Base.JLOptions().startupfile != 2 && Base.include(Main, startupfile) ',...
             'end '));
 
+            % rebuild MATLAB
+            if getenv(CI)
+                mexjulia(true, 'using Pkg; Pkg.build("MATLAB")')
+            end
+
             % load required packages
             mexjulia(true, 'using MATLAB, Mex');
-            
+
             % restore the path
             if ispc
                 cd(old_dir);
