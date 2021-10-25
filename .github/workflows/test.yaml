@@ -30,8 +30,12 @@ jobs:
           command: addpath('deps'), build
       - name: Run Julia tests
         uses: julia-actions/julia-runtest@master
-      - name: Run MATLAB tests
-        uses: matlab-actions/run-tests@v1
-        with:
-          source-folder: mexjulia
-          select-by-folder: test
+      - name: Run MATLAB test
+        uses: matlab-actions/run-command@v1
+        with:  
+          command: addpath('mexjulia'), addpath('test'), jlevalTest
+#       - name: Run MATLAB tests
+#         uses: matlab-actions/run-tests@v1
+#         with:
+#           source-folder: mexjulia
+#           select-by-folder: test
