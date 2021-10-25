@@ -24,7 +24,7 @@ jobs:
           version: ${{ matrix.julia-version }}
       - name: Generate Build Script
         uses: julia-actions/julia-buildpkg@master
-      - name: Run Build Script
+      - name: Generate Mex File
         uses: matlab-actions/run-command@v1
         with:
           command: addpath('deps'), build
@@ -33,4 +33,5 @@ jobs:
       - name: Run MATLAB tests
         uses: matlab-actions/run-tests@v1
         with:
+          source-folder: mexjulia
           select-by-folder: test
