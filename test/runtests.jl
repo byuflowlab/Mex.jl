@@ -2,8 +2,6 @@ using MATLAB, Test
 
 is_ci() = lowercase(get(ENV, "CI", "false")) == "true"
 
-using Pkg; Pkg.Registry.status()
-
 if !is_ci() # only test if not CI
 
     @testset "jl.eval" begin
