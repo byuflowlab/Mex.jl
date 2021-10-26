@@ -1,3 +1,4 @@
+using Compat
 import Libdl
 
 # the following functions are adapted from the julia-config.jl script and are used to 
