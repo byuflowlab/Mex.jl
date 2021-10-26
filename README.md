@@ -16,9 +16,11 @@
 
 from the MATLAB command prompt.
 
+***NOTE:** This project currently only supports Julia 1.5.  Support for Julia 1.6 and greater will be possible when the changes resulting from  https://github.com/JuliaLang/julia/issues/42411 are incorporated into the latest stable release of Julia.*
+
 ## Installation
 
-First ensure that the [MATLAB.jl](https://github.com/JuliaInterop/MATLAB.jl) Julia package is properly installed.  This package makes use of the MxArrays type defined in that package and also uses it for this packages initial configuration step.
+First ensure that the [MATLAB.jl](https://github.com/JuliaInterop/MATLAB.jl) Julia package can be properly installed.
 
 Then simply add this package in Julia using the following command:
 ```
@@ -29,6 +31,8 @@ The build process will:
  1. use `julia` to determine build options,
  1. build the `mexjulia` MEX function from source,
  1. add the `mexjulia` directory to your MATLAB path.
+
+By default, `Mex.jl` uses the MATLAB installation with the greatest version number. To specify that a specific MATLAB installation should be used, set the environment variable `MATLAB_ROOT`.
 
 ## Quick start
 
@@ -128,3 +132,11 @@ ans =
 The first argument to `jl.mex` is the name of the function to be invoked. All remaining arguments are treated as function arguments. 
 
 `jl.mex` expects the functions on which it is invoked to accept a single argument of type `Vector{MATLAB.MxArray}` and to return an iterable collection of values on which `MATLAB.mxarray` may be successfully invoked (_e.g._, a value of type `Vector{MATLAB.MxArray}`).
+
+## Additional Examples
+
+Additional usage examples may be found in the `examples` folder.
+
+## Performance
+
+To learn how to reduce the overhead associated with this package, see `performance.m` in the example folder.
