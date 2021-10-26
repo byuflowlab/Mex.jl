@@ -1,0 +1,37 @@
+name: Run tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: ['1.5']
+        julia-arch: [x64]
+        os: [ubuntu-latest]
+        
+    steps:
+      - name: Install csh
+        run: sudo apt-get install -y csh
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Generate Build Script
+        uses: julia-actions/julia-buildpkg@master
+      - name: Generate Mex File
+        uses: matlab-actions/run-command@v1
+        with:
+          command: addpath('deps'), build
+      - name: Add Mex.jl package to the default Julia environment
+        run: julia -e 'using Pkg; Pkg.add(url=".");'
+      - name: Run MATLAB tests
+        uses: matlab-actions/run-tests@v1
+        with:
+          source-folder: mexjulia
+          select-by-folder: test
