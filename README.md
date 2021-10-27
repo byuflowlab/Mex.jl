@@ -140,3 +140,7 @@ Additional usage examples may be found in the `examples` folder.
 ## Performance
 
 To learn how to reduce the overhead associated with this package, see `performance.m` in the example folder.
+
+## Credits
+
+This package was originally based on the [`mexjulia`](https://github.com/juliamatlab/mexjulia) project, which was designed to embed early versions of Julia into the MATLAB process.
