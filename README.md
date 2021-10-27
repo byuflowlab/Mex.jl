@@ -143,4 +143,4 @@ To learn how to reduce the overhead associated with this package, see `performan
 
 ## Credits
 
-This package was originally based on the [`mexjulia`](https://github.com/juliamatlab/mexjulia) project, which was designed to embed early versions of Julia into the MATLAB process.
+The starting point for the development of this package was the [`mexjulia`](https://github.com/juliamatlab/mexjulia) project, which was designed to embed early versions of Julia into the MATLAB process.
