@@ -144,7 +144,7 @@ if !isnothing(matlab_root)
     build_ldlibs = ldlibs()
     build_src = abspath("mexjulia.cpp")
     outdir = normpath(joinpath(pwd(),"..","mexjulia"))
-    mex_cmd = "mex -v -largeArrayDims -outdir \'$outdir\' LDFLAGS=\'$(build_ldflags) \$LDFLAGS\' CFLAGS=\'$(build_cflags) \$CFLAGS\' \'$(build_src)\' $(build_ldlibs)"
+    mex_cmd = "mex -v -largeArrayDims -outdir \'$outdir\' LDFLAGS=\'$(build_ldflags) \$LDFLAGS\' CFLAGS=\'$(build_cflags) \$CFLAGS\' \'$(build_src)\' \'$(build_ldlibs)\'"
 
     # generate Mex-file build script
     dict_file = joinpath(outdir, "jldict.mat")
