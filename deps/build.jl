@@ -54,7 +54,7 @@ function ldlibs()
     if Sys.isunix()
         return "-l$libname -ldl"
     else
-        return normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a"))
+        return "$(normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a"))) -lopenlibm"
     end
 end
 
