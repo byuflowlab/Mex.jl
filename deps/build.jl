@@ -205,7 +205,7 @@ if !isnothing(matlab_root)
     if !is_ci() 
 
         # run the Mex-file build script
-        run(`$matlab_cmd -nodisplay -nosplash -nodesktop -r "run('$build_file');exit"`)
+        run(`$matlab_cmd -nodesktop -nosplash -r "run('$build_file');exit"`)
 
         # check that the build information has been saved in the mexjulia directory
         @assert isfile(joinpath(outdir, "jldict.mat"))
