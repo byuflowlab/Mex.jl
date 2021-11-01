@@ -54,7 +54,7 @@ function ldlibs()
     if Sys.isunix()
         return "-l$libname -ldl"
     else
-        return normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a"))
+        return "\'$(normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a")))\'"
     end
 end
 
@@ -144,7 +144,7 @@ if !isnothing(matlab_root)
     build_ldlibs = ldlibs()
     build_src = abspath("mexjulia.cpp")
     outdir = normpath(joinpath(pwd(),"..","mexjulia"))
-    mex_cmd = "mex -v -largeArrayDims -outdir \'$outdir\' LDFLAGS=\'$(build_ldflags) \$LDFLAGS\' CFLAGS=\'$(build_cflags) \$CFLAGS\' \'$(build_src)\' \'$(build_ldlibs)\'"
+    mex_cmd = "mex -v -largeArrayDims -outdir \'$outdir\' LDFLAGS=\'$(build_ldflags) \$LDFLAGS\' CFLAGS=\'$(build_cflags) \$CFLAGS\' \'$(build_src)\' $(build_ldlibs)"
 
     # generate Mex-file build script
     dict_file = joinpath(outdir, "jldict.mat")
