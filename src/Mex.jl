@@ -17,11 +17,18 @@ const ut_is_interrupt_pending = Ref{Ptr{Cvoid}}()
 
 function __init__()
     
-    libmex[] = Libdl.dlopen(joinpath(MATLAB.matlab_libpath, "libmex"), Libdl.RTLD_GLOBAL; throw_error=false)
-    mex_call_matlab_with_trap[] = Libdl.dlsym(libmex[], :mexCallMATLABWithTrap; throw_error=false)
+    result = Libdl.dlopen(joinpath(MATLAB.matlab_libpath, "libmex"), Libdl.RTLD_GLOBAL; throw_error=false)
+    if !isnothing(result)
+        libmex[] = result
+        mex_call_matlab_with_trap[] = Libdl.dlsym(libmex[], :mexCallMATLABWithTrap)
+    end
 
-    libut[]  = Libdl.dlopen(joinpath(MATLAB.matlab_libpath, "libut"), Libdl.RTLD_GLOBAL; throw_error=false)
-    ut_is_interrupt_pending[] = Libdl.dlsym(libut[], :utIsInterruptPending; throw_error=false)
+    result = Libdl.dlopen(joinpath(MATLAB.matlab_libpath, "libut"), Libdl.RTLD_GLOBAL; throw_error=false)
+    if !isnothing(result)
+        libut[]  = result
+        ut_is_interrupt_pending[] = Libdl.dlsym(libut[], :utIsInterruptPending)
+    end
+    
 end
 
 # --- Patches --- #
