@@ -22,9 +22,10 @@ from the MATLAB command prompt.
 
 First ensure that the [MATLAB.jl](https://github.com/JuliaInterop/MATLAB.jl) Julia package can be properly installed.
 
-Then simply add this package in Julia using the following command:
-```
-]add Mex
+Then enter the package manager by typing `]` and then run the following:
+
+```julia
+pkg> add Mex
 ```
 
 The build process will:
