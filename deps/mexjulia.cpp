@@ -44,14 +44,6 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   }
   else if (mxIsChar(prhs[0])) // call a Mex-like Julia function
   {
-    // extract function
-    char *fnName = mxArrayToString(prhs[0]);
-    jl_function_t *fn = jl_get_function(jl_main_module, fnName);
-    mxFree(fnName);
-    if(!fn)
-    {
-      mexErrMsgTxt("Function not found.");
-    }
     // extract arguments
     jl_value_t **args;
     JL_GC_PUSHARGS(args, 3);
@@ -59,9 +51,13 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     args[1] = (jl_value_t *)jl_ptr_to_array_1d(args[0], plhs, nlhs > 1 ? nlhs : 1, 0);
     args[2] = (jl_value_t *)jl_ptr_to_array_1d(args[0], prhs + 1, nrhs - 1, 0);
     // call function
+    char *fnName = mxArrayToString(prhs[0]);
+    jl_function_t *fn = jl_get_function(jl_main_module, fnName);
+    if(!fn) mexErrMsgTxt("Function not found.");
     jl_call2(fn, args[1], args[2]);
     // free memory
     JL_GC_POP();
+    mxFree(fnName);
   }
   else if (mxIsLogicalScalar(prhs[0]))
   {
@@ -78,9 +74,9 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     {
       if (!check_init())
       {
-        char *home =  nrhs > 1 && mxIsChar(prhs[1]) ? mxArrayToString(prhs[1]) : NULL;
+        char *home  = nrhs > 1 && mxIsChar(prhs[1]) ? mxArrayToString(prhs[1]) : NULL;
         char *image = nrhs > 2 && mxIsChar(prhs[2]) ? mxArrayToString(prhs[2]) : NULL;
-        char *lib =   nrhs > 3 && mxIsChar(prhs[3]) ? mxArrayToString(prhs[3]) : NULL;
+        char *lib   = nrhs > 3 && mxIsChar(prhs[3]) ? mxArrayToString(prhs[3]) : NULL;
         jl_options.handle_signals = JL_OPTIONS_HANDLE_SIGNALS_OFF;
         #ifdef _OS_LINUX_
           if (!dlopen(lib, RTLD_LAZY | RTLD_GLOBAL))
