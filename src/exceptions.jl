@@ -1,3 +1,13 @@
+# --- Interrupt Handling --- #
+
+is_interrupt_pending() = ccall(ut_is_interrupt_pending[], Cuchar, ()) != 0
+
+function check_for_interrupt()
+    if is_interrupt_pending()
+        throw(InterruptException())
+    end
+end
+
 # --- Exception Handling --- #
 
 # MatlabException is basically identical to MxArray, but is an exception

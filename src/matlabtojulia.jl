@@ -1,8 +1,40 @@
 # --- Calling Embedded Julia from MATLAB --- #
 
-# entry point for MATLAB calling Julia
-jl_mex(plhs::Vector{Ptr{Cvoid}}, prhs::Vector{Ptr{Cvoid}}) = jl_mex_inner(plhs, prhs)
+const catching_interrupts = Ref(false)
 
+# entry point for MATLAB calling Julia
+function jl_mex(plhs::Vector{Ptr{Cvoid}}, prhs::Vector{Ptr{Cvoid}})
+    if ENABLE_INTERRUPTS && !catching_interrupts[]
+        try 
+            catching_interrupts[] = true
+            jl_mex_outer(plhs, prhs)
+        finally
+            catching_interrupts[] = false
+        end
+    else
+        jl_mex_inner(plhs, prhs)
+    end
+end
+
+# enables interrupt processing
+function jl_mex_outer(plhs::Vector{Ptr{Cvoid}}, prhs::Vector{Ptr{Cvoid}})
+    # do the desired computation
+    main_task = @async jl_mex_inner(plhs, prhs)
+
+    # check for interrupt
+    interrupt_handler = @async begin
+        while !Base.istaskdone(main_task)
+            if is_interrupt_pending()
+                Base.throwto(main_task, InterruptException())
+            end
+            yield()
+        end
+    end
+
+    # wait for main task to finish
+    wait(main_task)
+end
+    
 # runs julia function with mex function inputs, catching errors if they occur
 function jl_mex_inner(plhs::Vector{Ptr{Cvoid}}, prhs::Vector{Ptr{Cvoid}})
 

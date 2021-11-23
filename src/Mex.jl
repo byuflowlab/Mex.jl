@@ -15,6 +15,9 @@ const mex_call_matlab_with_trap = Ref{Ptr{Cvoid}}()
 const libut = Ref{Ptr{Cvoid}}()
 const ut_is_interrupt_pending = Ref{Ptr{Cvoid}}()
 
+# Flag for turning on/off interrupts
+const ENABLE_INTERRUPTS = false
+
 function __init__()
     
     result = Libdl.dlopen(joinpath(MATLAB.matlab_libpath, "libmex"), Libdl.RTLD_GLOBAL; throw_error=false)
