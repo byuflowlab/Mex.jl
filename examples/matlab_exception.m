@@ -2,8 +2,6 @@
 % MATLAB (with the Julia backtrace appended)
 function matlab_exception()
 
-exn_thrower = @() error('I take exception to everything.');
-
 try
     jl.call('Mex.call_matlab', int32(0), exn_thrower)
 catch e
