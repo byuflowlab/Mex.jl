@@ -29,36 +29,13 @@ function includeDir()
     return abspath(Sys.BINDIR, Base.INCLUDEDIR, "julia")
 end
 
-# function ldflags()
-#     fl = "-L$(shell_escape(libDir()))"
-#     if Sys.isunix()
-#         fl = fl * " -Wl,-rpath $(shell_escape(libDir()))"
-#     end
-#     return fl
-# end
-    
 function ldflags()
     fl = "-L$(shell_escape(libDir()))"
-    if Sys.iswindows()
-        fl = fl * " -Wl,--stack,8388608"
-    elseif !Sys.isapple()
-        fl = fl * " -Wl,--export-dynamic"
+    if Sys.isunix()
+        fl = fl * " -Wl,-rpath $(shell_escape(libDir()))"
     end
     return fl
-end    
-    
-# function ldlibs()
-#     libname = if isDebug()
-#         "julia-debug"
-#     else
-#         "julia"
-#     end
-#     if Sys.isunix()
-#         return "-l$libname -ldl"
-#     else
-#         return "\'$(normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a")))\'"
-#     end
-# end
+end
     
 function ldlibs()
     libname = if isDebug()
@@ -67,13 +44,11 @@ function ldlibs()
         "julia"
     end
     if Sys.isunix()
-        return "-Wl,-rpath,$(shell_escape(libDir())) " *
-            (Sys.isapple() ? string() : "-Wl,-rpath,$(shell_escape(private_libDir())) ") *
-            "-l$libname"
+        return "-l$libname -ldl"
     else
-        return "-l$libname -lopenlibm"
+        return "\'$(normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a")))\'"
     end
-end    
+end
     
 function cflags()
     fl = "-I $(shell_escape(includeDir()))"
