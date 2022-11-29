@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        matlab-version: R2021b
+        matlab-version: ['R2021b']
         julia-version: ['1.6','1']
         julia-arch: [x64]
         os: [ubuntu-latest]
