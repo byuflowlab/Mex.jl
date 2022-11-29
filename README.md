@@ -19,6 +19,8 @@
 
 from the MATLAB command prompt.
 
+***NOTE:** This project does not currently support Julia 1.8.  There currently appears to be an error when loading this package in Julia.
+
 ## Installation
 
 First ensure that the [MATLAB.jl](https://github.com/JuliaInterop/MATLAB.jl) Julia package can be properly installed.
