@@ -20,7 +20,7 @@ jobs:
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
         with:
-          version: ${{ matrix.matlab-version }}
+          release: ${{ matrix.matlab-version }}
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
         with:
