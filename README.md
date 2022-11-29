@@ -16,8 +16,6 @@
 
 from the MATLAB command prompt.
 
-***NOTE:** This project currently only supports Julia 1.5.  Support for Julia 1.6 and greater will be possible when the changes resulting from  https://github.com/JuliaLang/julia/issues/42411 are incorporated into the latest stable release of Julia.*
-
 ## Installation
 
 First ensure that the [MATLAB.jl](https://github.com/JuliaInterop/MATLAB.jl) Julia package can be properly installed.
