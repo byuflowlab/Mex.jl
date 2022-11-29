@@ -8,6 +8,9 @@
 
 ## Prerequisites
 
+| :exclamation:  This package cannot be used with MATLAB 2022a/2022b because these versions are currently incompatible with [MATLAB.jl](https://github.com/JuliaInterop/MATLAB.jl).  |
+|-----------------------------------------|
+
 `Mex.jl` requires MATLAB and Julia along with a C++ compiler configured to work with MATLAB's `mex` command, the last is required for building the `mexjulia` MEX function. You can check that a compiler is properly configured by executing:
 
 ```
