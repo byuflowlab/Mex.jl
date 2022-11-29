@@ -16,7 +16,7 @@ function matlab_escape(str)
 end
 
 function libDir()
-    return if isDebug()
+    return if isDebug() != 0
         dirname(abspath(Libdl.dlpath("libjulia-debug")))
     else
         dirname(abspath(Libdl.dlpath("libjulia")))
@@ -29,22 +29,37 @@ function includeDir()
     return abspath(Sys.BINDIR, Base.INCLUDEDIR, "julia")
 end
 
-function cflags()
-    fl = "-I $(shell_escape(includeDir()))"
-    if Sys.isunix()
-        fl = fl * " -fPIC"
-    end
-    return fl
-end
-
+# function ldflags()
+#     fl = "-L$(shell_escape(libDir()))"
+#     if Sys.isunix()
+#         fl = fl * " -Wl,-rpath $(shell_escape(libDir()))"
+#     end
+#     return fl
+# end
+    
 function ldflags()
     fl = "-L$(shell_escape(libDir()))"
-    if Sys.isunix()
-        fl = fl * " -Wl,-rpath $(shell_escape(libDir()))"
+    if Sys.iswindows()
+        fl = fl * " -Wl,--stack,8388608"
+    elseif !Sys.isapple()
+        fl = fl * " -Wl,--export-dynamic"
     end
     return fl
-end
-
+end    
+    
+# function ldlibs()
+#     libname = if isDebug()
+#         "julia-debug"
+#     else
+#         "julia"
+#     end
+#     if Sys.isunix()
+#         return "-l$libname -ldl"
+#     else
+#         return "\'$(normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a")))\'"
+#     end
+# end
+    
 function ldlibs()
     libname = if isDebug()
         "julia-debug"
@@ -52,10 +67,20 @@ function ldlibs()
         "julia"
     end
     if Sys.isunix()
-        return "-l$libname -ldl"
+        return "-Wl,-rpath,$(shell_escape(libDir())) " *
+            (Sys.isapple() ? string() : "-Wl,-rpath,$(shell_escape(private_libDir())) ") *
+            "-l$libname"
     else
-        return "\'$(normpath(joinpath(libDir(), "..", "lib", "lib$libname.dll.a")))\'"
+        return "-l$libname -lopenlibm"
     end
+end    
+    
+function cflags()
+    fl = "-I $(shell_escape(includeDir()))"
+    if Sys.isunix()
+        fl = fl * " -fPIC"
+    end
+    return fl
 end
 
 # the following two functions are taken from the MATLAB.jl build script and are used to 
