@@ -1,23 +1,39 @@
-name: Run tests
-
-on: [push, pull_request]
-
+name: CI
+on:
+  push:
+    branches:
+      - master
+    tags: '*'
+  pull_request:
+concurrency:
+  # Skip intermediate builds: always.
+  # Cancel intermediate builds: only if it is a pull request build.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 jobs:
   test:
+    name: MATLAB ${{ matrix.matlab-version }} - Julia ${{ matrix.julia-version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        julia-version: ['1.5']
-        julia-arch: [x64]
-        os: [ubuntu-latest]
-        
+        matlab-version: 
+          - 'R2021b'
+        julia-version: 
+          - '1.6'
+        os: 
+          - ubuntu-latest
+        arch: 
+          - x64
     steps:
       - name: Install csh
         run: sudo apt-get install -y csh
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v1
+        with:
+          release: ${{ matrix.matlab-version }}
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
         with:

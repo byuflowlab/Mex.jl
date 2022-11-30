@@ -8,6 +8,12 @@
 
 ## Prerequisites
 
+| :exclamation:  This package cannot be used with MATLAB 2022a/2022b because these versions are currently incompatible with [MATLAB.jl](https://github.com/JuliaInterop/MATLAB.jl).  |
+|-----------------------------------------|
+
+| :exclamation:  This package supports Julia 1.6, but does not currently support Julia 1.8.  |
+|-----------------------------------------|
+
 `Mex.jl` requires MATLAB and Julia along with a C++ compiler configured to work with MATLAB's `mex` command, the last is required for building the `mexjulia` MEX function. You can check that a compiler is properly configured by executing:
 
 ```
@@ -15,8 +21,6 @@
 ```
 
 from the MATLAB command prompt.
-
-***NOTE:** This project currently only supports Julia 1.5.  Support for Julia 1.6 and greater will be possible when the changes resulting from  https://github.com/JuliaLang/julia/issues/42411 are incorporated into the latest stable release of Julia.*
 
 ## Installation
 
