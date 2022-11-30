@@ -3,7 +3,7 @@
 function matlab_exception()
 
 try
-    jl.call('Mex.call_matlab', int32(0), exn_thrower)
+    call_matlab_function(exn_thrower);
 catch e
     disp(getReport(e));
 end
