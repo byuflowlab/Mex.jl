@@ -21,6 +21,7 @@ jobs:
           - 'R2021b'
         julia-version: 
           - '1.6'
+          - '1'
         os: 
           - ubuntu-latest
         arch: 
@@ -45,7 +46,7 @@ jobs:
         with:
           command: addpath('deps'), build
       - name: Add Mex.jl package to the default Julia environment
-        run: julia -e 'using Pkg; Pkg.add(url=".");'
+        run: julia -e 'using Pkg; Pkg.add(url="."); using Mex;'
       - name: Run MATLAB tests
         uses: matlab-actions/run-tests@v1
         with:
