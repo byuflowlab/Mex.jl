@@ -49,6 +49,8 @@ jobs:
           command: addpath('deps'), build
       - name: Add Mex.jl package to the default Julia environment
         run: julia -e 'using Pkg; Pkg.add(url=".");'
+        env:
+          MATLAB_ROOT: "/usr/local/MATLAB/${{ matrix.matlab-version }}"
       - name: Run MATLAB tests
         uses: matlab-actions/run-tests@v1
         with:
