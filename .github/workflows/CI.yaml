@@ -21,6 +21,7 @@ jobs:
           - 'R2021b'
         julia-version: 
           - '1.6'
+          - '1'
         os: 
           - ubuntu-latest
         arch: 
@@ -40,6 +41,8 @@ jobs:
           version: ${{ matrix.julia-version }}
       - name: Generate Build Script
         uses: julia-actions/julia-buildpkg@master
+        env:
+          MATLAB_ROOT: "/usr/local/MATLAB/${{ matrix.matlab-version }}"
       - name: Generate Mex File
         uses: matlab-actions/run-command@v1
         with:
