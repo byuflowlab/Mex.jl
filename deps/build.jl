@@ -1,6 +1,6 @@
 import Libdl
 
-# the following functions are adapted from the julia-config.jl script and are used to 
+# the following functions are adapted from the julia-config.jl script and are used to
 # determine parameters for the Mex file build process
 
 isDebug() = ccall(:jl_is_debugbuild, Cint, ()) != 0
@@ -58,7 +58,7 @@ function ldlibs()
     end
 end
 
-# the following two functions are taken from the MATLAB.jl build script and are used to 
+# the following two functions are taken from the MATLAB.jl build script and are used to
 # locate MATLAB and its relevant libraries and commands
 
 function find_matlab_root()
@@ -68,6 +68,7 @@ function find_matlab_root()
     if isnothing(matlab_root)
         matlab_exe = Sys.which("matlab")
         if !isnothing(matlab_exe)
+            matlab_exe = islink(matlab_exe) ? readlink(matlab_exe) : matlab_exe
             matlab_root = dirname(dirname(matlab_exe))
         else
             if Sys.isapple()
@@ -81,6 +82,15 @@ function find_matlab_root()
                 end
             elseif Sys.iswindows()
                 default_dir = Sys.WORD_SIZE == 32 ? "C:\\Program Files (x86)\\MATLAB" : "C:\\Program Files\\MATLAB"
+                if isdir(default_dir)
+                    dirs = readdir(default_dir)
+                    filter!(dir -> occursin(r"^R[0-9]+[ab]$", dir), dirs)
+                    if !isempty(dirs)
+                        matlab_root = joinpath(default_dir, maximum(dirs))
+                    end
+                end
+            elseif Sys.islinux()
+                default_dir = "/usr/local/MATLAB"
                 if isdir(default_dir)
                     dirs = readdir(default_dir)
                     filter!(dir -> occursin(r"^R[0-9]+[ab]$", dir), dirs)
@@ -172,13 +182,13 @@ if !isnothing(matlab_root)
             save($(matlab_escape(dict_file)), "is_debug", "julia_bin", "julia_home",...
                 "sys_image", "lib_base", "lib_path", "lib_dir", "inc_dir", "build_cflags",...
                 "build_ldflags", "build_ldlibs", "build_src", "mex_cmd");
-            
+
             % Run Mex Command
             $mex_cmd;
-            
+
             """
         )
-        
+
         if !is_ci()
             println(io,
                 """
@@ -189,7 +199,7 @@ if !isnothing(matlab_root)
                 else
                     on_path = any(strcmp($(matlab_escape(outdir)), path_dirs));
                 end
-            
+
                 % Add the `mexjulia` directory to the path and save the path (if necessary)
                 if ~on_path
                     fprintf('%s is not on the MATLAB path. Adding it and saving...\\n\', $(matlab_escape(outdir)));
@@ -202,7 +212,7 @@ if !isnothing(matlab_root)
     end
 
     # We have to run the build script separately for CI due to licensing issues
-    if !is_ci() 
+    if !is_ci()
 
         # run the Mex-file build script
         run(`$matlab_cmd -nodesktop -nosplash -r "run('$build_file');exit"`)
@@ -212,7 +222,7 @@ if !isnothing(matlab_root)
 
         # check that the compiled mexjulia file has been saved in the mexjulia directory
         @assert isfile(joinpath(outdir, "mexjulia" * mex_extension()))
-    
+
     end
 
 elseif get(ENV, "JULIA_REGISTRYCI_AUTOMERGE", nothing) == "true"
